@@ -1,6 +1,6 @@
 # ko-javascript-info-tools
 
-[모던 JavaScript 튜토리얼](https://javascript.info/) 한국어 번역 프로젝트 [ko.javascript.info](https://github.com/javascript-tutorial/ko.javascript.info)의 번역 품질을 검증하는 Claude Code 플러그인입니다.
+[모던 JavaScript 튜토리얼](https://javascript.info/) 한국어 번역 프로젝트 [ko.javascript.info](https://github.com/javascript-tutorial/ko.javascript.info)의 번역 품질을 검증하는 Claude Code 및 Codex용 도구 모음입니다.
 
 번역 파일(`.md`)을 지정하면 4개의 에이전트가 병렬로 규칙을 검사하고, 마크다운 보고서와 JSON 파일을 생성합니다.
 
@@ -37,6 +37,8 @@ Claude Code에서 아래 명령을 순서대로 실행합니다.
 
 ## 사용법
 
+### Claude Code
+
 ```
 /translation-validator <번역 파일 경로>
 ```
@@ -45,6 +47,14 @@ Claude Code에서 아래 명령을 순서대로 실행합니다.
 
 ```
 /translation-validator 1-js/02-first-steps/03-strict-mode/article.md
+```
+
+### Codex
+
+Codex에서는 맞춤법 검사 전용 스킬을 사용할 수 있습니다.
+
+```
+Use $korean-spell-checker to check 1-js/02-first-steps/03-strict-mode/article.md
 ```
 
 ---
@@ -245,22 +255,31 @@ article.md → article_validation.json
 ```
 .
 ├── .claude-plugin/
-│   ├── plugin.json               # 플러그인 메타데이터
-│   └── marketplace.json          # 마켓플레이스 정보
-├── agents/
-│   ├── wiki-validator.md         # WIKI 규칙 검사 에이전트
-│   ├── kigo-validator.md         # KIGO 규칙 검사 에이전트
-│   ├── custom-rule-validator.md  # CUSTOM 규칙 검사 에이전트
-│   └── spell-checker.md          # 맞춤법 검사 에이전트
-├── skills/
-│   └── javascriptinfo-ko-translation-validator/
-│       ├── SKILL.md              # Claude Code 스킬 정의
-│       └── references/
-│           ├── wiki-guidelines.md
-│           ├── kigo-guidelines.md
-│           └── custom-rules.md
-└── scripts/
-    └── check_spelling.py         # 맞춤법 검사 스크립트
+│   └── marketplace.json          # Claude Code 마켓플레이스 정보
+└── plugins/
+    └── ko-javascript-info-tools/
+        ├── .claude-plugin/
+        │   └── plugin.json       # Claude Code 플러그인 메타데이터
+        ├── .codex-plugin/
+        │   └── plugin.json       # Codex 플러그인 메타데이터
+        ├── agents/
+        │   ├── wiki-validator.md
+        │   ├── kigo-validator.md
+        │   ├── custom-rule-validator.md
+        │   └── spell-checker.md
+        ├── skills/
+        │   ├── javascriptinfo-ko-translation-validator/
+        │   │   ├── SKILL.md
+        │   │   └── references/
+        │   │       ├── wiki-guidelines.md
+        │   │       ├── kigo-guidelines.md
+        │   │       └── custom-rules.md
+        │   └── korean-spell-checker/
+        │       ├── SKILL.md      # Codex 맞춤법 검사 스킬 정의
+        │       ├── agents/openai.yaml
+        │       └── scripts/check_spelling.py
+        └── scripts/
+            └── check_spelling.py # Claude 맞춤법 검사 스크립트
 ```
 
 ---

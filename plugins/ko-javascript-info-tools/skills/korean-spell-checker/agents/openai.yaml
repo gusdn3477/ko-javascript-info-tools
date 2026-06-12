@@ -1,0 +1,4 @@
+interface:
+  display_name: "Korean Spell Checker"
+  short_description: "한국어 번역 문서의 맞춤법과 띄어쓰기 검사 도구"
+  default_prompt: "Use $korean-spell-checker to check a Korean Markdown translation for spelling issues."
