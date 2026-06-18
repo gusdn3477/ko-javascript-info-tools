@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "ko-javascript-info-tools",
   "description": "Tools for working with ko.javascript.info translations",
   "version": "1.0.0",
