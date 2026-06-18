@@ -8,8 +8,9 @@
   "plugins": [
     {
       "name": "ko-javascript-info-tools",
-      "source": "./plugins/ko-javascript-info-tools",
-      "description": "ko.javascript.info 한국어 번역 작업을 위한 도구 모음. 번역 검증, 맞춤법 검사 등을 지원합니다."
+      "source": "./",
+      "description": "ko.javascript.info 한국어 번역 작업을 위한 도구 모음. 번역 검증, 맞춤법 검사 등을 지원합니다.",
+      "version": "1.0.1"
     }
   ]
 }

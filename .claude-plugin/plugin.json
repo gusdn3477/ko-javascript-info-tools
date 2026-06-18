@@ -2,16 +2,10 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "ko-javascript-info-tools",
   "description": "Tools for working with ko.javascript.info translations",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "Bo Hyun Kim",
     "email": "rlaqhguse@gmail.com",
     "url": "https://github.com/BHyeonKim"
-  },
-  "agents": [
-    "./agents/custom-rule-validator.md",
-    "./agents/kigo-validator.md",
-    "./agents/spell-checker.md",
-    "./agents/wiki-validator.md"
-  ]
+  }
 }
