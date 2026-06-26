@@ -190,6 +190,10 @@ def check_file(file_path: str) -> dict:
     cleaned = strip_non_korean_content(raw)
     lines = cleaned.splitlines()
 
+    # 모든 표준 번역어 집합 — 비표준 표기가 그 자체로 다른 용어의 표준어이면
+    # (예: '객체'는 object의 표준어) 동음이의 오탐을 막기 위해 일관성 학습에서 제외한다.
+    standard_terms = {c for cands in glossary.values() for c in cands}
+
     violations = []
     passed = []
     learned: dict[str, str] = {}  # 비표준 한국어 표기 -> 표준 대표어
@@ -218,7 +222,9 @@ def check_file(file_path: str) -> dict:
                         "severity": "recommended",
                     }
                 )
-                learned[korean_used] = candidates[0]  # 비표준 표기 학습
+                if korean_used not in standard_terms:
+                    # 동음이의(다른 용어의 표준어)는 학습 제외 — 단독 등장 오탐 방지
+                    learned[korean_used] = candidates[0]
 
     # 2차 패스: 학습된 비표준 표기의 '단독' 등장 검출
     for term, standard in learned.items():

@@ -12,9 +12,13 @@ def strip_non_korean_content(content: str, inline_replacement: str = ' ') -> str
     passes '\\n' so that a token boundary separates the surrounding Korean
     fragments, avoiding hanspell josa-spacing false positives.
     """
-    # Fenced code blocks (백틱 3개 이상, 여는/닫는 펜스 길이 일치)
+    # Fenced code blocks (백틱 3개 이상, 여는/닫는 펜스 길이 일치).
+    # 줄 수를 보존하도록 동일 개수의 개행으로 치환 — 호출부(check_glossary)의 줄번호 정확도 유지.
     content = re.sub(
-        r'^(`{3,})[^\n]*\n[\s\S]*?^\1[ \t]*$', '\n', content, flags=re.MULTILINE
+        r'^(`{3,})[^\n]*\n[\s\S]*?^\1[ \t]*$',
+        lambda m: '\n' * m.group(0).count('\n'),
+        content,
+        flags=re.MULTILINE,
     )
     # Inline code
     content = re.sub(r'`[^`\n]+`', inline_replacement, content)
@@ -31,8 +35,10 @@ def strip_non_korean_content(content: str, inline_replacement: str = ' ') -> str
     # Bold/italic markers
     content = re.sub(r'\*{1,3}', '', content)
     content = re.sub(r'(?<!\w)_([^_\n]+)_(?!\w)', r'\1', content)
-    # YAML frontmatter
-    content = re.sub(r'^---[\s\S]*?---\n', '', content)
+    # YAML frontmatter (줄 수 보존)
+    content = re.sub(
+        r'^---[\s\S]*?---\n', lambda m: '\n' * m.group(0).count('\n'), content
+    )
     # Smart quotes
     content = content.replace('“', '"').replace('”', '"')
     return content
