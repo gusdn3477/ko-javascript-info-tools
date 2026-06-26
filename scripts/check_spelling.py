@@ -10,36 +10,12 @@ Output (stdout): JSON array of spelling violations
 """
 
 import sys
-import re
 import subprocess
 import json
 import os
+import re
 
-
-def strip_non_korean_content(content: str) -> str:
-    """Remove regions that should not be spell-checked."""
-    # Fenced code blocks
-    content = re.sub(r'```[\s\S]*?```', '\n', content)
-    # Inline code
-    content = re.sub(r'`[^`\n]+`', ' ', content)
-    # URLs
-    content = re.sub(r'https?://\S+', ' ', content)
-    # Markdown images
-    content = re.sub(r'!\[[^\]]*\]\([^\)]+\)', ' ', content)
-    # Markdown links → keep link text only
-    content = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', content)
-    # HTML tags
-    content = re.sub(r'<[^>]+>', ' ', content)
-    # Heading markers
-    content = re.sub(r'^#{1,6}\s+', '', content, flags=re.MULTILINE)
-    # Bold/italic markers
-    content = re.sub(r'\*{1,3}', '', content)
-    content = re.sub(r'(?<!\w)_([^_\n]+)_(?!\w)', r'\1', content)
-    # YAML frontmatter
-    content = re.sub(r'^---[\s\S]*?---\n', '', content)
-    # Smart quotes and special chars that confuse hanspell
-    content = content.replace('“', '"').replace('”', '"')
-    return content
+from _text_utils import strip_non_korean_content
 
 
 def parse_hanspell_output(output: str) -> list[dict]:
@@ -64,6 +40,10 @@ def parse_hanspell_output(output: str) -> list[dict]:
             if i + 1 < len(lines) and ' -> ' not in lines[i + 1] and lines[i + 1].strip():
                 explanation = lines[i + 1].strip()
                 i += 1
+            if original.strip() == suggestion.strip():
+                # hanspell quirk: suggestion identical to original (no real fix)
+                i += 1
+                continue
             violations.append({
                 'original': original,
                 'suggestion': suggestion,
@@ -82,7 +62,12 @@ def check_spelling(file_path: str) -> None:
     with open(file_path, 'r', encoding='utf-8') as f:
         content = f.read()
 
-    cleaned = strip_non_korean_content(content)
+    # Replace inline spans with a newline so a token boundary separates the
+    # surrounding Korean fragments (avoids hanspell josa-spacing false positives
+    # like "이벤트가  부터" → "이벤트가부터"), then tidy the input.
+    cleaned = strip_non_korean_content(content, inline_replacement='\n')
+    cleaned = re.sub(r'[ \t]+\n', '\n', cleaned)
+    cleaned = re.sub(r'\n{3,}', '\n\n', cleaned)
 
     try:
         result = subprocess.run(
@@ -100,6 +85,15 @@ def check_spelling(file_path: str) -> None:
         print(json.dumps({'error': 'npx not found — install Node.js first'}))
         sys.exit(1)
 
+    # 도구 실패가 "오류 없음"으로 둔갑하지 않도록: 정상 실행은 (오류 유무와 무관하게)
+    # 교정문을 stdout으로 항상 돌려준다. 따라서 비정상 종료 + 빈 stdout만 진짜 실패로 본다.
+    if result.returncode != 0 and not result.stdout.strip():
+        print(json.dumps({
+            'error': f'hanspell failed (exit {result.returncode}): '
+                     f'{result.stderr.strip()[:200]}'
+        }, ensure_ascii=False))
+        sys.exit(1)
+
     # hanspell: violations go to stderr, corrected text goes to stdout
     violations = parse_hanspell_output(result.stderr)
 
@@ -107,7 +101,6 @@ def check_spelling(file_path: str) -> None:
         'file': file_path,
         'violations': violations,
         'total': len(violations),
-        'corrected_text': result.stdout.strip(),
     }
     print(json.dumps(output, ensure_ascii=False, indent=2))
 
