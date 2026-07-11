@@ -1,6 +1,6 @@
 # ko-javascript-info-tools
 
-[모던 JavaScript 튜토리얼](https://javascript.info/) 한국어 번역 프로젝트 [ko.javascript.info](https://github.com/javascript-tutorial/ko.javascript.info)의 번역 품질을 검증하는 Claude Code 플러그인입니다.
+[모던 JavaScript 튜토리얼](https://javascript.info/) 한국어 번역 프로젝트 [ko.javascript.info](https://github.com/javascript-tutorial/ko.javascript.info)의 번역 품질을 검증하는 Claude Code 및 Codex용 도구 모음입니다.
 
 번역 파일(`.md`)을 지정하면 5개의 에이전트가 병렬로 규칙을 검사하고, 마크다운 보고서와 JSON 파일을 생성합니다.
 
@@ -11,11 +11,12 @@
 ### 사전 요구사항
 
 - [Claude Code](https://claude.ai/code) CLI 설치
+- [Codex](https://developers.openai.com/codex/) CLI 또는 앱 설치
 - Python 3 (맞춤법 검사 에이전트에 필요)
 - Node.js + [hanspell](https://www.npmjs.com/package/hanspell) (`npm install -g hanspell`)
 - macOS / Linux / WSL
 
-### 플러그인 설치
+### Claude Code 플러그인 설치
 
 Claude Code에서 아래 명령을 순서대로 실행합니다.
 
@@ -24,6 +25,17 @@ Claude Code에서 아래 명령을 순서대로 실행합니다.
 /plugin install ko-javascript-info-tools@ko-javascript-info-tools
 /reload-plugins
 ```
+
+### Codex 플러그인 설치
+
+저장소를 클론한 뒤 Codex 로컬 마켓플레이스와 플러그인을 등록합니다.
+
+```
+codex plugin marketplace add /path/to/ko-javascript-info-tools
+codex plugin add ko-javascript-info-tools-codex@ko-javascript-info-tools-local
+```
+
+설치 또는 업데이트 후 새 태스크에서 스킬을 사용합니다.
 
 ### 업데이트
 
@@ -37,6 +49,8 @@ Claude Code에서 아래 명령을 순서대로 실행합니다.
 
 ## 사용법
 
+### Claude Code
+
 ```
 /translation-validator <번역 파일 경로>
 ```
@@ -45,6 +59,32 @@ Claude Code에서 아래 명령을 순서대로 실행합니다.
 
 ```
 /translation-validator 1-js/02-first-steps/03-strict-mode/article.md
+```
+
+### Codex
+
+Codex에서는 Claude의 `/translation-validator`와 같은 전체 검증 프로세스를 실행할 수 있습니다.
+
+아래 예시는 **터미널 명령이 아니라 Codex 채팅창에 입력하는 프롬프트**입니다.
+
+```
+Use $javascriptinfo-ko-translation-validator to review 1-js/02-first-steps/03-strict-mode/article.md
+```
+
+Codex는 WIKI, KIGO, CUSTOM 검증을 각각 독립 에이전트로 병렬 실행하고, 메인 에이전트에서 맞춤법 검사를 동시에 실행합니다. 이후 결과를 병합해 `<파일명>_validation.json`을 저장하고, 선택에 따라 안전한 항목을 수정한 뒤 전체 검증을 다시 실행합니다.
+
+맞춤법만 검사하려면 `$korean-spell-checker`를 사용합니다.
+
+아래 예시는 **터미널 명령이 아니라 Codex 채팅창에 입력하는 프롬프트**입니다.
+
+```
+Use $korean-spell-checker to check 1-js/02-first-steps/03-strict-mode/article.md
+```
+
+터미널에서 직접 실행하려면 스킬에 포함된 스크립트를 실행합니다.
+
+```
+python3 ~/.codex/skills/korean-spell-checker/scripts/check_spelling.py 1-js/02-first-steps/03-strict-mode/article.md
 ```
 
 ---
@@ -263,6 +303,9 @@ article.md → article_validation.json
 
 ```
 .
+├── .agents/
+│   └── plugins/
+│       └── marketplace.json      # Codex 로컬 마켓플레이스 정보
 ├── .claude-plugin/
 │   ├── plugin.json               # 플러그인 메타데이터
 │   └── marketplace.json          # 마켓플레이스 정보
@@ -283,10 +326,27 @@ article.md → article_validation.json
 │   ├── _text_utils.py            # 마크다운 전처리 공유 모듈
 │   ├── check_spelling.py         # 맞춤법 검사 스크립트
 │   └── check_glossary.py         # 용어집 일관성 검사 스크립트
-└── glossary/
+├── glossary/
     ├── meta.json                 # 용어집 시트 메타·해시
     ├── sheet1.csv                # 일반 기술 용어 캐시
     └── sheet2.csv                # 기호·구두점 표기 캐시
+└── plugins/
+    └── ko-javascript-info-tools-codex/  # Codex 전용 플러그인
+        ├── .codex-plugin/
+        │   └── plugin.json       # Codex 플러그인 메타데이터
+        └── skills/
+            ├── javascriptinfo-ko-translation-validator/
+            │   ├── SKILL.md       # Codex 번역 검증 스킬 정의
+            │   ├── agents/openai.yaml
+            │   └── references/
+            │       ├── wiki-guidelines.md
+            │       ├── kigo-guidelines.md
+            │       └── custom-rules.md
+            └── korean-spell-checker/
+                ├── SKILL.md       # Codex 맞춤법 검사 스킬 정의
+                ├── agents/openai.yaml
+                ├── scripts/check_spelling.py
+                └── tests/test_check_spelling.py
 ```
 
 ---

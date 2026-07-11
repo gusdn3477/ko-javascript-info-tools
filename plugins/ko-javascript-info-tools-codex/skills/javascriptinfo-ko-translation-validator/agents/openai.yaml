@@ -1,0 +1,4 @@
+interface:
+  display_name: "ko.javascript.info 번역 검증"
+  short_description: "4개 검사를 병렬 실행해 한국어 번역 품질을 검증합니다"
+  default_prompt: "$javascriptinfo-ko-translation-validator로 한국어 번역 문서를 검토해 주세요."

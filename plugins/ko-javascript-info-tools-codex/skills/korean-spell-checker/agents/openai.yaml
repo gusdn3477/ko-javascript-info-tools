@@ -1,0 +1,4 @@
+interface:
+  display_name: "한국어 맞춤법 검사"
+  short_description: "한국어 번역 문서의 맞춤법과 띄어쓰기 검사 도구"
+  default_prompt: "$korean-spell-checker로 한국어 Markdown 번역의 맞춤법과 띄어쓰기를 검사해 주세요."

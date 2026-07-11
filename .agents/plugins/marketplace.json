@@ -1,0 +1,20 @@
+{
+  "name": "ko-javascript-info-tools-local",
+  "interface": {
+    "displayName": "Ko Javascript Info Tools Local"
+  },
+  "plugins": [
+    {
+      "name": "ko-javascript-info-tools-codex",
+      "source": {
+        "source": "local",
+        "path": "./plugins/ko-javascript-info-tools-codex"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

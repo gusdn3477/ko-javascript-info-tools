@@ -1,0 +1,36 @@
+{
+  "name": "ko-javascript-info-tools-codex",
+  "version": "1.0.0+codex.20260806115759",
+  "description": "Codex tools for reviewing ko.javascript.info Korean translations, including spelling checks and translation validation skills.",
+  "author": {
+    "name": "\ubc15\ud604\uc6b0",
+    "email": "gusdn3477@gmail.com",
+    "url": "https://github.com/gusdn3477"
+  },
+  "repository": "https://github.com/BHyeonKim/ko-javascript-info-tools",
+  "keywords": [
+    "korean",
+    "translation",
+    "javascript-info",
+    "spell-check"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "ko.javascript.info Tools",
+    "shortDescription": "Korean translation review tools for Codex",
+    "longDescription": "Review ko.javascript.info Korean translation files with Codex skills for spelling checks and project translation rules.",
+    "developerName": "\ubc15\ud604\uc6b0",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write",
+      "Interactive"
+    ],
+    "defaultPrompt": [
+      "Check this Korean Markdown translation for spelling.",
+      "Review this ko.javascript.info article translation."
+    ],
+    "brandColor": "#F59E0B",
+    "screenshots": []
+  }
+}
