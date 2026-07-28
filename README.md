@@ -278,8 +278,7 @@ article.md → article_validation.json
 │       └── references/
 │           ├── wiki-guidelines.md
 │           ├── kigo-guidelines.md
-│           ├── custom-rules.md
-│           └── glossary-guidelines.md
+│           └── custom-rules.md
 ├── scripts/
 │   ├── _text_utils.py            # 마크다운 전처리 공유 모듈
 │   ├── check_spelling.py         # 맞춤법 검사 스크립트

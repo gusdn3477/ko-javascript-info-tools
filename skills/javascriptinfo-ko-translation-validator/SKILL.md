@@ -29,7 +29,7 @@ agent: wiki-validator, kigo-validator, custom-validator, spell-checker, glossary
 - **kigo-validator**: 동일하되 `kigo-guidelines.md`
 - **custom-validator**: 동일하되 `custom-rules.md`
 - **spell-checker**: `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/check_spelling.py" "<파일 절대경로>"` 명령을 전달
-- **glossary-validator**: `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/check_glossary.py" "<파일 절대경로>"` 명령 + `${CLAUDE_PLUGIN_ROOT}/skills/javascriptinfo-ko-translation-validator/references/glossary-guidelines.md` 경로를 전달
+- **glossary-validator**: `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/check_glossary.py" "<파일 절대경로>"` 명령을 전달
 
 spell-checker는 `check_spelling.py`가, glossary-validator는 `check_glossary.py`가 존재하지 않으면 건너뛴다.
 
