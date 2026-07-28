@@ -6,7 +6,7 @@ ko.javascript.info 한국어 번역 팀이 운영하는 공식 용어집(Google 
 - 시트1(일반 기술 용어): https://docs.google.com/spreadsheets/d/1fYaEI8vz26N3R2VaxrlNnk9fMQ8zIy4RpvjRp4jZd0Q/edit?gid=1401860741
 - 시트2(기호/구두점 표기): https://docs.google.com/spreadsheets/d/1fYaEI8vz26N3R2VaxrlNnk9fMQ8zIy4RpvjRp4jZd0Q/edit?gid=843106813
 
-두 시트는 `glossary/sheet1.csv`, `glossary/sheet2.csv`로 캐시되며, 매 실행 시 원본 시트를
+두 시트는 `${CLAUDE_PLUGIN_ROOT}/glossary/sheet1.csv`, `${CLAUDE_PLUGIN_ROOT}/glossary/sheet2.csv`로 캐시되며, 매 실행 시 원본 시트를
 조회하고 해시가 변경된 경우에만 캐시를 갱신한다. 네트워크 실패 시 기존 캐시로 계속 동작한다.
 
 ## GLOSSARY-mismatch 표준 번역어 불일치
