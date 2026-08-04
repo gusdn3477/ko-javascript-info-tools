@@ -2,7 +2,7 @@
 
 [모던 JavaScript 튜토리얼](https://javascript.info/) 한국어 번역 프로젝트 [ko.javascript.info](https://github.com/javascript-tutorial/ko.javascript.info)의 번역 품질을 검증하는 Claude Code 플러그인입니다.
 
-번역 파일(`.md`)을 지정하면 4개의 에이전트가 병렬로 규칙을 검사하고, 마크다운 보고서와 JSON 파일을 생성합니다.
+번역 파일(`.md`)을 지정하면 5개의 에이전트가 병렬로 규칙을 검사하고, 마크다운 보고서와 JSON 파일을 생성합니다.
 
 ---
 
@@ -51,7 +51,7 @@ Claude Code에서 아래 명령을 순서대로 실행합니다.
 
 ## 에이전트 구성
 
-4개의 에이전트가 동시에 실행됩니다.
+5개의 에이전트가 동시에 실행됩니다.
 
 ### Agent 1 — WIKI 규칙 검사
 
@@ -121,6 +121,18 @@ ko.javascript.info 프로젝트 자체 규칙
 > npm install -g hanspell
 > ```
 
+### Agent 5 — 용어집 일관성 검사
+
+ko.javascript.info 번역 팀 공식 용어집(Google Sheets)을 캐시한 뒤, Python 스크립트(`scripts/check_glossary.py`)로 `한국어(영어)` 병기 표기가 표준 번역어와 일치하는지 검사합니다.
+
+| 규칙 ID | 내용 |
+|---------|------|
+| GLOSSARY-mismatch | `한국어(영어)` 병기에서 한국어가 용어집 표준 표기와 다름 (🟡 권고) |
+| GLOSSARY-inconsistent | 한 영어 용어를 문서 내에서 다른 한국어로 혼용 (🟡 권고) |
+
+- 용어집은 매 실행 시 원본 시트를 조회해 해시가 바뀐 경우에만 `glossary/`에 캐시를 갱신하며, 네트워크 실패 시 기존 캐시로 계속 동작합니다.
+- `한국어(영어)` 병기 패턴에만 적용하며(오탐 방지), 자동 수정 대상이 아닙니다(수동 검토만 안내).
+
 > 코드 블록(` ``` `), 인라인 코드(`` ` ``) 내부는 모든 에이전트 검사에서 제외됩니다.
 
 ---
@@ -147,6 +159,7 @@ ko.javascript.info 프로젝트 자체 규칙
 - KIGO: 외래어 표기 준수, 제품명 번역 않음, ...
 - CUSTOM: `엄격 모드(strict mode)` 첫 등장 병기 적용, ...
 - SPELL: 그 외 맞춤법 오류 없음
+- GLOSSARY: 용어집 표준 번역어 일치
 
 ### 총평
 🔴 필수 9건 · 🟡 권고 10건. KIGO-시제 위반(5건)이 가장 빈번 —
@@ -187,7 +200,13 @@ article.md → article_validation.json
     "wiki": ["WIKI-1: 헤딩 콜론 사용 없음", "..."],
     "kigo": ["KIGO-약어: 대문자 표기 준수", "..."],
     "custom": ["엄격 모드(strict mode) 첫 등장 시 병기 적용", "..."],
-    "spell": ["그 외 맞춤법 오류 없음"]
+    "spell": ["그 외 맞춤법 오류 없음"],
+    "glossary": ["프로퍼티(property) — 표준 번역어 일치", "..."]
+  },
+  "glossary_cache": {
+    "last_fetched": "2026-06-19T01:12:07+09:00",
+    "refreshed": false,
+    "network_warning": null
   }
 }
 ```
@@ -226,7 +245,7 @@ article.md → article_validation.json
 ```
 
 > 코드 블록(` ``` `) 내부는 자동 수정에서 제외됩니다.
-> 문장 전체 재작성이 필요한 항목은 제안만 표시하고 직접 수정을 안내합니다.
+> 문장 전체 재작성이 필요한 항목, GLOSSARY-mismatch 항목은 제안만 표시하고 직접 수정을 안내합니다.
 
 ---
 
@@ -251,7 +270,8 @@ article.md → article_validation.json
 │   ├── wiki-validator.md         # WIKI 규칙 검사 에이전트
 │   ├── kigo-validator.md         # KIGO 규칙 검사 에이전트
 │   ├── custom-rule-validator.md  # CUSTOM 규칙 검사 에이전트
-│   └── spell-checker.md          # 맞춤법 검사 에이전트
+│   ├── spell-checker.md          # 맞춤법 검사 에이전트
+│   └── glossary-validator.md     # 용어집 일관성 검사 에이전트
 ├── skills/
 │   └── javascriptinfo-ko-translation-validator/
 │       ├── SKILL.md              # Claude Code 스킬 정의
@@ -259,8 +279,14 @@ article.md → article_validation.json
 │           ├── wiki-guidelines.md
 │           ├── kigo-guidelines.md
 │           └── custom-rules.md
-└── scripts/
-    └── check_spelling.py         # 맞춤법 검사 스크립트
+├── scripts/
+│   ├── _text_utils.py            # 마크다운 전처리 공유 모듈
+│   ├── check_spelling.py         # 맞춤법 검사 스크립트
+│   └── check_glossary.py         # 용어집 일관성 검사 스크립트
+└── glossary/
+    ├── meta.json                 # 용어집 시트 메타·해시
+    ├── sheet1.csv                # 일반 기술 용어 캐시
+    └── sheet2.csv                # 기호·구두점 표기 캐시
 ```
 
 ---
