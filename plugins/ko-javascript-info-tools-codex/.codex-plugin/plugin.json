@@ -1,9 +1,9 @@
 {
   "name": "ko-javascript-info-tools-codex",
-  "version": "1.0.0+codex.20260806115759",
+  "version": "1.0.0",
   "description": "Codex tools for reviewing ko.javascript.info Korean translations, including spelling checks and translation validation skills.",
   "author": {
-    "name": "\ubc15\ud604\uc6b0",
+    "name": "Hyun Woo Park",
     "email": "gusdn3477@gmail.com",
     "url": "https://github.com/gusdn3477"
   },
@@ -19,7 +19,7 @@
     "displayName": "ko.javascript.info Tools",
     "shortDescription": "Korean translation review tools for Codex",
     "longDescription": "Review ko.javascript.info Korean translation files with Codex skills for spelling checks and project translation rules.",
-    "developerName": "\ubc15\ud604\uc6b0",
+    "developerName": "Hyun Woo Park",
     "category": "Productivity",
     "capabilities": [
       "Read",
